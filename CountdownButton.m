@@ -23,42 +23,6 @@ static char timerKey;
 
 @implementation CountdownButton
 
-//- (void)viewWillAppearWithButton:(UIButton *)button {
-//    NSLog(@"%@", button.superview);
-//    for (UIView *next = button.superview; next; next = next.superview) {
-//        UIResponder *nextResponder = [next nextResponder];
-//        if ([nextResponder isKindOfClass:[UIViewController class]]) {
-//            UIViewController *viewController = (UIViewController *)nextResponder;
-//            
-//            unsigned int conut = 0;
-//            Method *methods = class_copyMethodList([viewController class], &conut);
-//            for (int i = 0; i < conut; i++) {
-//                Method method = methods[i];
-//                if (sel_isEqual(method_getName(method), @selector(viewDidDisappear:))) {
-//                    Method new = class_getInstanceMethod([self class], @selector(myViewDidDisappear:));
-//                    //首先动态添加方法，实现是被交换的方法，返回值表示添加成功还是失败
-//                    BOOL isAdd = class_addMethod([self class], @selector(myViewDidDisappear:), method_getImplementation(new), method_getTypeEncoding(new));
-//                    if (isAdd) {
-//                        //如果成功，说明类中不存在这个方法的实现
-//                        //将被交换方法的实现替换到这个并不存在的实现
-//                        class_replaceMethod([self class], @selector(myViewDidDisappear:), method_getImplementation(method), method_getTypeEncoding(method));
-//                    }else{
-//                        //否则，交换两个方法的实现
-//                        method_exchangeImplementations(method, new);
-//                    }
-//                }
-//            }
-//        }
-//    }
-//}
-//
-//- (void)myViewDidDisappear:(BOOL)animated {
-//
-//    
-//    NSLog(@"不理解");
-//    
-//}
-
 + (CountdownButton *)buttonWithFrame:(CGRect)frame
                               title:(NSString *)title
                            callBack:(CountdownBlock)block {
@@ -115,7 +79,9 @@ static char timerKey;
 
 + (void)stopTimer {
     dispatch_source_t timer = objc_getAssociatedObject(self, &timerKey);
-    dispatch_source_cancel(timer);
+    if (timer) {
+        dispatch_source_cancel(timer);
+    }
     objc_setAssociatedObject(self, &timerKey, nil, OBJC_ASSOCIATION_ASSIGN);
 }
 
