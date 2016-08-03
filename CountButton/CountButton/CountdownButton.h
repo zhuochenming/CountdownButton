@@ -21,16 +21,18 @@ static CGFloat const countFontSize = 14;
 
 + (NSTimeInterval)timeIntervalToSecond:(NSInteger)second;
 
-//验证码倒计时
-- (instancetype)initWithFrame:(CGRect)frame title:(NSString *)title tapEvent:(CountingBlock)tapBlock callBack:(CdCompleteBlock)completeBlock;
+#pragma mark - 验证码倒计时
+- (instancetype)initWithFrame:(CGRect)frame title:(NSString *)title startTime:(NSInteger)startTime tapEvent:(CountingBlock)tapBlock callBack:(CdCompleteBlock)completeBlock;
+//直接从某个时间开始倒计时
+- (void)startWithTime:(NSInteger)timeCount;
 
-//天数倒计时
+#pragma mark - 天数倒计时
 - (instancetype)initWithFrame:(CGRect)frame leftTime:(NSTimeInterval)leftTime;
 
-//计时
+#pragma mark - 计时
 - (instancetype)initWithFrame:(CGRect)frame;
 
-#warning 必须在viewWillDisappear里停掉计时器
-+ (void)stopTimer;
+#warning 必须在- (void)viewDidDisappear:(BOOL)animated 里停掉计时器
+- (void)stopTimer;
 
 @end

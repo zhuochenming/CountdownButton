@@ -7,23 +7,22 @@
 //
 
 #import "CountdownButton.h"
-#import <objc/runtime.h>
-
-static char secondTimerKey;
-static char dayTimerKey;
 
 @interface CountdownButton ()
+
+@property (nonatomic, strong) dispatch_source_t timer;
+@property (nonatomic, assign) NSInteger allTime;
+
+@property (nonatomic, strong) dispatch_source_t increaseTimer;
+@property (nonatomic, strong) dispatch_source_t decreaseTimer;
 
 @property (nonatomic, copy) CountingBlock tapBlock;
 
 @property (nonatomic, copy) CdCompleteBlock completeBlock;
 
 @property (nonatomic, strong) UILabel *dayLabel;
-
 @property (nonatomic, strong) UILabel *hourLabel;
-
 @property (nonatomic, strong) UILabel *minuteLabel;
-
 @property (nonatomic, strong) UILabel *secondLabel;
 
 @end
@@ -31,10 +30,10 @@ static char dayTimerKey;
 @implementation CountdownButton
 
 #pragma mark - 初始化
-- (instancetype)initWithFrame:(CGRect)frame title:(NSString *)title tapEvent:(CountingBlock)tapBlock callBack:(CdCompleteBlock)completeBlock {
+- (instancetype)initWithFrame:(CGRect)frame title:(NSString *)title startTime:(NSInteger)startTime  tapEvent:(CountingBlock)tapBlock callBack:(CdCompleteBlock)completeBlock {
     self = [super initWithFrame:frame];
     if (self) {
-        
+        _allTime = startTime;
         self.tapBlock = tapBlock;
         self.completeBlock = completeBlock;
         
@@ -50,7 +49,6 @@ static char dayTimerKey;
     self = [super initWithFrame:frame];
     if (self) {
         [self configurationViewWithFrame:frame];
-        
         [self timeCountLeftWithTimeInterval:leftTime];
     }
     return self;
@@ -112,69 +110,69 @@ static char dayTimerKey;
         self.tapBlock();
     }
     button.backgroundColor = SelColor;
-    [self startWithButton:button time:61 subTitle:@"秒"];
+    [self startWithTime:_allTime];
     button.userInteractionEnabled = NO;
 }
 
-- (void)startWithButton:(UIButton *)button time:(NSInteger)timeCount subTitle:(NSString *)subTitle {
+- (void)startWithTime:(NSInteger)timeCount {
     
     __block NSInteger timeLeft = timeCount;
     
     dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
-    dispatch_source_t timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, queue);
     
-    objc_setAssociatedObject(self, &secondTimerKey, timer, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    
-    dispatch_source_set_timer(timer, dispatch_walltime(NULL, 0), 1.0 * NSEC_PER_SEC, 0);
-    dispatch_source_set_event_handler(timer, ^{
+    if (_timer == nil) {
+        _timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, queue);
+    }
+
+    dispatch_source_set_timer(_timer, dispatch_walltime(NULL, 0), 1.0 * NSEC_PER_SEC, 0);
+    dispatch_source_set_event_handler(_timer, ^{
         
         if (timeLeft <= 0) {
-            dispatch_source_cancel(timer);
+            dispatch_source_cancel(_timer);
             dispatch_async(dispatch_get_main_queue(), ^{
                 if (self.completeBlock) {
                     self.completeBlock();
                 }
                 
-                dispatch_source_t secondTimer = objc_getAssociatedObject(self, &secondTimerKey);
-                if (secondTimer) {
-                    dispatch_source_cancel(secondTimer);
-                    secondTimer = nil;
+                if (_timer) {
+                    dispatch_source_cancel(_timer);
+                    _timer = nil;
                 }
                 
-                button.backgroundColor = BacColor;
-                [button setTitle:@"重新发送" forState:UIControlStateNormal];
-                button.userInteractionEnabled = YES;
+                self.backgroundColor = BacColor;
+                [self setTitle:@"重新发送" forState:UIControlStateNormal];
+                self.userInteractionEnabled = YES;
             });
         } else {
             NSString *timeString = [NSString stringWithFormat:@"%ld", timeLeft];
             dispatch_async(dispatch_get_main_queue(), ^{
-                button.backgroundColor = SelColor;
-                [button setTitle:[NSString stringWithFormat:@"剩余%@%@", timeString, subTitle] forState:UIControlStateNormal];
-                button.userInteractionEnabled = NO;
+                self.backgroundColor = SelColor;
+                [self setTitle:[NSString stringWithFormat:@"剩余%@秒", timeString] forState:UIControlStateNormal];
+                self.userInteractionEnabled = NO;
             });
             timeLeft--;
         }
     });
-    dispatch_resume(timer);
+    dispatch_resume(_timer);
 }
 
 - (void)timeCountLeftWithTimeInterval:(NSTimeInterval)leftTime {    
     __block NSInteger timeout = leftTime;
     if (timeout != 0) {
         dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
-        dispatch_source_t timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, queue);
         
-        objc_setAssociatedObject(self, &dayTimerKey, timer, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+        if (_decreaseTimer == nil) {
+            _decreaseTimer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, queue);
+        }
         
-        dispatch_source_set_timer(timer, dispatch_walltime(NULL, 0), 1.0 * NSEC_PER_SEC, 0);
+        dispatch_source_set_timer(_decreaseTimer, dispatch_walltime(NULL, 0), 1.0 * NSEC_PER_SEC, 0);
         //每秒执行
-        dispatch_source_set_event_handler(timer, ^{
+        dispatch_source_set_event_handler(_decreaseTimer, ^{
             if(timeout <= 0) {
                 //倒计时结束，关闭
-                dispatch_source_t dayTimer = objc_getAssociatedObject(self, &dayTimerKey);
-                if (dayTimer) {
-                    dispatch_source_cancel(dayTimer);
-                    dayTimer = nil;
+                if (_decreaseTimer) {
+                    dispatch_source_cancel(_decreaseTimer);
+                    _decreaseTimer = nil;
                 }
                 
                 dispatch_async(dispatch_get_main_queue(), ^{
@@ -216,7 +214,7 @@ static char dayTimerKey;
                 timeout--;
             }
         });
-        dispatch_resume(timer);
+        dispatch_resume(_decreaseTimer);
     }
 }
 
@@ -227,13 +225,13 @@ static char dayTimerKey;
     __block NSInteger dayCount = 0;
     
     dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
-    dispatch_source_t timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, queue);
-    
-    objc_setAssociatedObject(self, &dayTimerKey, timer, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    
-    dispatch_source_set_timer(timer, dispatch_walltime(NULL, 0), 1 * NSEC_PER_SEC, 0);
+    if (_increaseTimer == nil) {
+        _increaseTimer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, queue);
+    }
+
+    dispatch_source_set_timer(_increaseTimer, dispatch_walltime(NULL, 0), 1 * NSEC_PER_SEC, 0);
     //每秒执行
-    dispatch_source_set_event_handler(timer, ^{
+    dispatch_source_set_event_handler(_increaseTimer, ^{
             if (secondCount > 59) {
                 secondCount = 0;
                 minuteCount++;
@@ -248,7 +246,7 @@ static char dayTimerKey;
                 hourCount = 0;
                 dayCount++;
             }
-
+        
             dispatch_sync(dispatch_get_main_queue(), ^{
                 if (dayCount == 0) {
                     self.dayLabel.text = @"0天";
@@ -273,23 +271,22 @@ static char dayTimerKey;
             });
             secondCount++;
     });
-    dispatch_resume(timer);
+    dispatch_resume(_increaseTimer);
 }
 
-+ (void)stopTimer {
-    dispatch_source_t secondTimer = objc_getAssociatedObject(self, &secondTimerKey);
-    if (secondTimer) {
-        dispatch_source_cancel(secondTimer);
-        secondTimer = nil;
+- (void)stopTimer {
+    if (_timer) {
+        dispatch_source_cancel(_timer);
+        _timer = nil;
     }
-    objc_setAssociatedObject(self, &secondTimerKey, nil, OBJC_ASSOCIATION_ASSIGN);
-    
-    dispatch_source_t dayTimer = objc_getAssociatedObject(self, &dayTimerKey);
-    if (dayTimer) {
-        dispatch_source_cancel(dayTimer);
-        dayTimer = nil;
+    if (_decreaseTimer) {
+        dispatch_source_cancel(_decreaseTimer);
+        _decreaseTimer = nil;
     }
-    objc_setAssociatedObject(self, &dayTimerKey, nil, OBJC_ASSOCIATION_ASSIGN);
+    if (_increaseTimer) {
+        dispatch_source_cancel(_increaseTimer);
+        _increaseTimer = nil;
+    }
 }
 
 #pragma mark - 工具

@@ -7,7 +7,7 @@
 //
 
 #import "ViewController.h"
-#import "CountdownButton.h"
+#import "SecondViewController.h"
 
 @interface ViewController ()
 
@@ -17,32 +17,20 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    CGFloat width = CGRectGetWidth(self.view.frame);
-    CGFloat hegith = 40;
-    CGFloat buttonWidth = 100;
-    CGFloat left = (width - buttonWidth) / 2.0;
-
-    CountdownButton *firstButton = [[CountdownButton alloc] initWithFrame:CGRectMake(left, 150, buttonWidth, hegith) title:@"发送验证码" tapEvent:^{
-        NSLog(@"tap");
-    } callBack:^{
-        NSLog(@"complete");
-    }];
-    
-    [self.view addSubview:firstButton];
-    
-    CountdownButton *secondButton = [[CountdownButton alloc] initWithFrame:CGRectMake(left - 25, 250, buttonWidth + 50, hegith) leftTime:[CountdownButton timeIntervalToSecond:48 * 3600]];
-    [self.view addSubview:secondButton];
-    
-    CountdownButton *thirdButton = [[CountdownButton alloc] initWithFrame:CGRectMake(left - 25, 350, buttonWidth + 50, hegith)];
-    [self.view addSubview:thirdButton];
+ 
+    UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
+    button.frame = CGRectMake(0, 0, 100, 50);
+    button.center = self.view.center;
+    button.backgroundColor = [UIColor orangeColor];
+    [button addTarget:self action:@selector(buttonTouch) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:button];
     
     // Do any additional setup after loading the view.
 }
 
-- (void)viewDidDisappear:(BOOL)animated {
-    [super viewDidDisappear:animated];
-    
-    [CountdownButton stopTimer];
+- (void)buttonTouch {
+    SecondViewController *second = [SecondViewController new];
+    [self.navigationController pushViewController:second animated:YES];
 }
 
 - (void)didReceiveMemoryWarning {
