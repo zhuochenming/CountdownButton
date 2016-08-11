@@ -19,6 +19,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    self.view.backgroundColor = [UIColor whiteColor];
     
     CGFloat width = CGRectGetWidth(self.view.frame);
     CGFloat hegith = 40;
@@ -34,11 +35,11 @@
     [self.view addSubview:firstButton];
     _button = firstButton;
     
-//    CountdownButton *secondButton = [[CountdownButton alloc] initWithFrame:CGRectMake(left - 25, 250, buttonWidth + 50, hegith) leftTime:[CountdownButton timeIntervalToSecond:48 * 3600]];
-//    [self.view addSubview:secondButton];
-//    
-//    CountdownButton *thirdButton = [[CountdownButton alloc] initWithFrame:CGRectMake(left - 25, 350, buttonWidth + 50, hegith)];
-//    [self.view addSubview:thirdButton];
+    CountdownButton *secondButton = [[CountdownButton alloc] initWithFrame:CGRectMake(left - 25, 250, buttonWidth + 50, hegith) leftTime:[CountdownButton timeIntervalToSecond:48 * 3600]];
+    [self.view addSubview:secondButton];
+    
+    CountdownButton *thirdButton = [[CountdownButton alloc] initWithFrame:CGRectMake(left - 25, 350, buttonWidth + 50, hegith)];
+    [self.view addSubview:thirdButton];
     
     // Do any additional setup after loading the view.
 }

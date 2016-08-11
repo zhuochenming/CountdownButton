@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4FBDB9BB1D5180F700600A58 /* SecondViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4FBDB9BA1D5180F700600A58 /* SecondViewController.m */; };
 		4FECD49E1D2A3F6D00762750 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 4FECD49D1D2A3F6D00762750 /* main.m */; };
 		4FECD4A11D2A3F6D00762750 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 4FECD4A01D2A3F6D00762750 /* AppDelegate.m */; };
 		4FECD4AC1D2A3F6D00762750 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4FECD4AB1D2A3F6D00762750 /* Assets.xcassets */; };
@@ -35,6 +36,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		4FBDB9B91D5180F700600A58 /* SecondViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SecondViewController.h; sourceTree = "<group>"; };
+		4FBDB9BA1D5180F700600A58 /* SecondViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SecondViewController.m; sourceTree = "<group>"; };
 		4FECD4991D2A3F6D00762750 /* CountButton.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CountButton.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4FECD49D1D2A3F6D00762750 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		4FECD49F1D2A3F6D00762750 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -106,6 +109,8 @@
 				4FECD4A01D2A3F6D00762750 /* AppDelegate.m */,
 				4FECD4D21D2A3F9600762750 /* ViewController.h */,
 				4FECD4D31D2A3F9600762750 /* ViewController.m */,
+				4FBDB9B91D5180F700600A58 /* SecondViewController.h */,
+				4FBDB9BA1D5180F700600A58 /* SecondViewController.m */,
 				4FECD4D51D2A404E00762750 /* CountdownButton.h */,
 				4FECD4D61D2A404E00762750 /* CountdownButton.m */,
 				4FECD4AB1D2A3F6D00762750 /* Assets.xcassets */,
@@ -271,6 +276,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4FBDB9BB1D5180F700600A58 /* SecondViewController.m in Sources */,
 				4FECD4D41D2A3F9600762750 /* ViewController.m in Sources */,
 				4FECD4D71D2A404E00762750 /* CountdownButton.m in Sources */,
 				4FECD4A11D2A3F6D00762750 /* AppDelegate.m in Sources */,
@@ -492,6 +498,7 @@
 				4FECD4CB1D2A3F6D00762750 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		4FECD4CC1D2A3F6D00762750 /* Build configuration list for PBXNativeTarget "CountButtonTests" */ = {
 			isa = XCConfigurationList;
@@ -500,6 +507,7 @@
 				4FECD4CE1D2A3F6D00762750 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		4FECD4CF1D2A3F6D00762750 /* Build configuration list for PBXNativeTarget "CountButtonUITests" */ = {
 			isa = XCConfigurationList;
@@ -508,6 +516,7 @@
 				4FECD4D11D2A3F6D00762750 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
